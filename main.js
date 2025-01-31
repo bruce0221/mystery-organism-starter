@@ -44,7 +44,7 @@ function pAequorFactory(num, dnaBasesArray){
       mutate() { 
 
         let mutateDNA = this.dna;
-        let randomIndex = Math.floor(Math.random() * 16);
+        let randomIndex = Math.floor(Math.random() * 15);
         let selectedBase = mutateDNA[randomIndex];
         let DnaBases = ['A', 'T', 'C', 'G'];
         
@@ -74,7 +74,16 @@ function pAequorFactory(num, dnaBasesArray){
         }
 
         let percentage = Math.floor((objectInCommon / this.dna.length) * 100) ;
+
+
         console.log( `specimen #${this.specimenNum} and specimen #${otherDNA.specimenNum} have ${percentage}% DNA in common.`);
+
+        return { 
+          specimen1: this.specimenNum,
+          specimen2: otherDNA.specimenNum,
+          DNApercentage: percentage
+        };
+
 
       },
 
@@ -87,11 +96,11 @@ function pAequorFactory(num, dnaBasesArray){
         let survivalObject = this.dna.filter( (item)=> { 
           return item === 'C' || item === 'G';
         });
-        console.log(survivalObject);
+        //console.log(survivalObject);
 
         let survivalPercentage = Math.floor((survivalObject.length / this.dna.length ) * 100) ;
         
-        console.log(survivalPercentage);
+        //console.log(survivalPercentage);
 
         if (survivalPercentage >= 60 ) { 
           return true;
@@ -101,10 +110,41 @@ function pAequorFactory(num, dnaBasesArray){
 
       },
 
+      //task 9.1
+      //create complementary DNA strand
+      complementStrand() { 
 
+        let changeaAray = this.dna ; 
 
+        let complementaryDNA = changeaAray.map( (item)=> { 
 
+          switch (item) { 
+            case 'A' : 
+              return 'T';
+              break;
 
+            case 'T' : 
+              return  'A';
+              break;
+            
+            case 'C':
+              return 'G';
+              break;
+            
+            case 'G':
+              return  'C';
+              break;
+
+            default: 
+              return item;
+
+          }
+
+        });
+
+        return complementaryDNA ;
+
+      }
 
 
     }
@@ -115,36 +155,66 @@ function pAequorFactory(num, dnaBasesArray){
 
 
 
+function generatesample() { 
 
-function createInstance () { 
+  let instanceLibrary = [];
 
-  let surviveInstances = [] ; 
+  let filteredInstance = [];
 
-  let numberOfInstance = surviveInstances.length;
+  for (let i = 0 ; i <= 500 ; i++){ 
 
-  let instance = [];
+    let instanceNum = i ;
+    let instanceDNA = mockUpStrand();
+    instanceLibrary.push (pAequorFactory(instanceNum,instanceDNA));
+  }
 
-  console.log(surviveInstances);
+  //console.log(instanceLibrary);
 
 
-  for (let i = 1 ; i <= 100 ; i++) { 
+  for (let j = 0 ; j < instanceLibrary.length ; j++){
 
-    instance[i] = pAequorFactory( i , mockUpStrand);
-
-    if (numberOfInstance === 30){ 
-      break ;
+    if (filteredInstance.length >= 30){ 
+      break;
     }
 
-
-    if (instance[i].willLikelySurvive() === true) { 
-      surviveInstances.push(instance[i]);
+    if (instanceLibrary[j].willLikelySurvive()) { 
+      filteredInstance.push(instanceLibrary[j]);
     }
 
   }
+
+  return filteredInstance;
 
 
 }
 
+
+
+//task 9.2
+//find two most related instances 
+
+function findRelatedInstance (arrays) { 
+
+  let List = [];
+
+  for(let i = 0 ; i < arrays.length ; i++){ 
+
+    for (let j = i + 1 ; j < arrays.length ; j++) { 
+
+     List.push(arrays[i].compareDNA(arrays[j]));
+
+    }
+  }
+
+
+  //sort the List and find the solution 
+    List.sort((a,b) => b.DNApercentage - a.DNApercentage);  
+
+    return List[0];
+
+
+
+}
 
 
 
@@ -169,22 +239,44 @@ function createInstance () {
 
 //let testing01 = pAequorFactory(1,sample01);
 
+//console.log(testing01.complementStrand());
+
 
 //console.log(testing01.willLikelySurvive());
 
 //console.log(testing01.mutate())
 
-/*
-let sample02 = mockUpStrand();
+
+//let sample02 = mockUpStrand();
 
 
-console.log(sample02);
-let testing02 = pAequorFactory(2,sample02);
+//console.log(sample02);
+//let testing02 = pAequorFactory(2,sample02);
 
-testing01.compareDNA(testing02);
-*/
+//testing01.compareDNA(testing02);
 
 
-createInstance();
 
-console.log(JSON.stringify(surviveInstances));
+//console.log(JSON.stringify(generatesample()));
+
+
+let newInstanceArray = generatesample() ;
+
+
+
+
+
+
+//console.log(JSON.stringify(newInstanceArray));
+
+//console.log(newInstanceArray[0].compareDNA(newInstanceArray[1]));
+
+//let percentageList = (findRelatedInstance(newInstanceArray));
+
+let result = findRelatedInstance(newInstanceArray);
+
+
+console.log(result);
+
+
+
